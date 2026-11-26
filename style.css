@@ -58,7 +58,7 @@ button {
   flex: 1;
   overflow: hidden;
   background:
-    url("aurora.png") center / cover no-repeat,
+    url("aurora.webp") center / cover no-repeat,
     radial-gradient(ellipse 90% 70% at 15% 20%, rgba(70, 40, 140, 0.85), transparent 60%),
     radial-gradient(ellipse 80% 60% at 85% 85%, rgba(20, 60, 140, 0.8), transparent 60%),
     linear-gradient(160deg, #1b1638 0%, #131730 45%, #0b0d17 100%);
@@ -92,8 +92,13 @@ button {
     0 0 0 0.5px rgba(0, 0, 0, 0.55),
     0 12px 34px rgba(0, 0, 0, 0.45),
     0 30px 80px rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(40px) saturate(160%);
-  -webkit-backdrop-filter: blur(40px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+}
+
+/* Promote only while the user is dragging; avoids a permanent compositor layer. */
+.window.is-dragging {
+  will-change: transform;
 }
 
 .window.is-hidden {
@@ -114,6 +119,7 @@ button {
   background: rgba(255, 255, 255, 0.06);
   border-bottom: 1px solid var(--hairline);
   cursor: grab;
+  touch-action: none; /* pointer drag works on touch screens too */
 }
 
 .title-bar:active {
@@ -228,8 +234,8 @@ button {
   padding: 0 12px;
   background: rgba(24, 24, 28, 0.6);
   border-top: 1px solid rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(40px) saturate(160%);
-  -webkit-backdrop-filter: blur(40px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
 }
 
 .start-button {
@@ -651,6 +657,41 @@ button {
   gap: 10px;
 }
 
+.tech-section + .tech-section {
+  margin-top: 22px;
+}
+
+.tech-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.tech-section-icon {
+  display: flex;
+  color: var(--accent);
+}
+
+.tech-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.tech-section-count {
+  margin-left: auto;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  color: var(--text-3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .tech-card {
   display: flex;
   align-items: center;
@@ -959,6 +1000,7 @@ button {
 }
 
 .project-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -982,6 +1024,29 @@ button {
   flex-direction: column;
   gap: 8px;
   flex: 1;
+}
+
+/* Stretched link: the whole card is clickable, inner links stay usable. */
+.project-overlay-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.project-overlay-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.project-card.is-clickable .card-link {
+  pointer-events: none;
+}
+
+.project-card .project-links {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
 }
 
 .project-card:hover {

@@ -98,6 +98,8 @@ const ICONS = {
   "square-code": '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
   "database-mysql":
     '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>',
+  github:
+    '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>',
 };
 
 /*
@@ -146,7 +148,11 @@ const ICON_COLORS = {
   /* Misc */
   mail: "#7aa2f7",
   play: "#36b37e",
+  github: "#e6edf3",
 };
+
+/* Parse each SVG path only once, then clone the cached template per icon. */
+const ICON_TEMPLATES = new Map();
 
 /**
  * Build an <svg> icon from the ICONS set above.
@@ -156,18 +162,22 @@ const ICON_COLORS = {
  */
 function createIcon(name, size) {
   const px = size || 16;
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("viewBox", "0 0 24 24");
+  let template = ICON_TEMPLATES.get(name);
+  if (!template) {
+    template = document.createElement("template");
+    template.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      (ICONS[name] || "") +
+      "</svg>";
+    ICON_TEMPLATES.set(name, template);
+  }
+
+  const svg = template.content.firstElementChild.cloneNode(true);
   svg.setAttribute("width", String(px));
   svg.setAttribute("height", String(px));
-  svg.setAttribute("fill", "none");
   svg.setAttribute("stroke", ICON_COLORS[name] || "currentColor");
-  svg.setAttribute("stroke-width", "2");
-  svg.setAttribute("stroke-linecap", "round");
-  svg.setAttribute("stroke-linejoin", "round");
-  svg.setAttribute("aria-hidden", "true");
   svg.classList.add("icon");
-  svg.innerHTML = ICONS[name] || "";
   return svg;
 }
 
@@ -180,8 +190,8 @@ const PORTFOLIO = {
   profile: {
     name: "Ziyad Cheto",
     initials: "ZC",
-    title: "Développeur Web Full-Stack",
-    tagline: "React · Laravel · PHP",
+    title: "Développeur Full-Stack Java / Angular",
+    tagline: "Java · Spring Boot · Angular",
     email: "chetoziyad@gmail.com",
   },
   experience: [
@@ -242,6 +252,33 @@ const PORTFOLIO = {
   ],
   projects: [
     {
+      name: "DriveSpace",
+      icon: "server",
+      period: "2026",
+      description:
+        "API REST de covoiturage multi-étapes en Java 17 / Spring Boot : publication de trajets avec arrêts ordonnés, réservation de segments et calcul dynamique des prix.",
+      highlights: [
+        "Recherche de trajets entre deux arrêts en une seule requête JPQL.",
+        "Réservation de segments avec calcul du prix et contrôle des places.",
+        "Erreurs normalisées RFC 9457 (ProblemDetail) et tests JUnit 5 / Mockito.",
+      ],
+      stack: ["Java 17", "Spring Boot", "Spring Data JPA", "PostgreSQL", "Docker"],
+      links: { repo: "https://github.com/ZiyadCh/driveSpace" },
+    },
+    {
+      name: "WeGrow API",
+      icon: "workflow",
+      period: "",
+      description:
+        "API Java 17 construite avec Spring MVC, Spring Data JPA et Hibernate, avec persistance PostgreSQL et tests JUnit.",
+      highlights: [
+        "Architecture en couches controller / service / repository.",
+        "Persistance JPA / Hibernate et échanges JSON typés.",
+      ],
+      stack: ["Java 17", "Spring MVC", "Spring Data JPA", "Hibernate", "PostgreSQL"],
+      links: { repo: "https://github.com/ZiyadCh/wegrow-api" },
+    },
+    {
       name: "SchoolWay",
       icon: "building",
       period: "",
@@ -274,34 +311,65 @@ const PORTFOLIO = {
     { name: "Anglais", level: "B2" },
     { name: "Français", level: "B1" },
   ],
-  technologies: [
-    /* Front-end */
-    { name: "React.js", icon: "atom" },
-    { name: "Angular", icon: "triangle" },
-    { name: "JavaScript", icon: "braces" },
-    { name: "TypeScript", icon: "file-code" },
-    /* Back-end */
-    { name: "Java (Jakarta EE · Spring Boot)", icon: "coffee" },
-    { name: "PHP (POO)", icon: "code" },
-    { name: "Laravel", icon: "flame" },
-    { name: "PostgreSQL", icon: "database" },
-    { name: "MySQL / MariaDB", icon: "database-mysql" },
-    /* Conception & Méthodes */
-    { name: "UML", icon: "workflow" },
-    { name: "ERD", icon: "table" },
-    { name: "Use case", icon: "target" },
-    { name: "Figma", icon: "pencil" },
-    { name: "Scrum", icon: "repeat" },
-    { name: "Kanban", icon: "columns" },
-    { name: "JIRA / Trello", icon: "clipboard-list" },
-    /* Outils */
-    { name: "Git / GitHub", icon: "git-branch" },
-    { name: "Docker", icon: "layers" },
-    { name: "Linux", icon: "terminal" },
-    { name: "VS Code", icon: "square-code" },
-    { name: "Vim", icon: "keyboard" },
+  /* Grouped by section so the Technologies window can show labelled blocks. */
+  technologySections: [
+    {
+      id: "frontend",
+      label: "Front-end",
+      icon: "layout",
+      items: [
+        { name: "Angular", icon: "triangle" },
+        { name: "TypeScript", icon: "file-code" },
+        { name: "JavaScript", icon: "braces" },
+        { name: "React.js", icon: "atom" },
+      ],
+    },
+    {
+      id: "backend",
+      label: "Java & back-end",
+      icon: "server",
+      items: [
+        { name: "Java 17 / Spring Boot", icon: "coffee" },
+        { name: "Spring Data JPA / Hibernate", icon: "layers" },
+        { name: "PHP (POO)", icon: "code" },
+        { name: "Laravel", icon: "flame" },
+        { name: "PostgreSQL", icon: "database" },
+        { name: "MySQL / MariaDB", icon: "database-mysql" },
+      ],
+    },
+    {
+      id: "methods",
+      label: "Conception & méthodes",
+      icon: "workflow",
+      items: [
+        { name: "UML", icon: "workflow" },
+        { name: "ERD", icon: "table" },
+        { name: "Use case", icon: "target" },
+        { name: "Figma", icon: "pencil" },
+        { name: "Scrum", icon: "repeat" },
+        { name: "Kanban", icon: "columns" },
+        { name: "JIRA / Trello", icon: "clipboard-list" },
+      ],
+    },
+    {
+      id: "tools",
+      label: "Outils",
+      icon: "wrench",
+      items: [
+        { name: "Git / GitHub", icon: "git-branch" },
+        { name: "Docker", icon: "layers" },
+        { name: "Linux", icon: "terminal" },
+        { name: "VS Code", icon: "square-code" },
+        { name: "Vim", icon: "keyboard" },
+      ],
+    },
   ],
 };
+
+/* Flat list kept for counts; the sections above drive the actual layout. */
+const ALL_TECHNOLOGIES = PORTFOLIO.technologySections.reduce(function (all, section) {
+  return all.concat(section.items);
+}, []);
 
 /* ----------------------------- Desktop ------------------------------- */
 
@@ -556,7 +624,7 @@ function buildWindow(winState, opts) {
     toggleMaximize(winState);
   });
 
-  titleBar.addEventListener("mousedown", function (e) {
+  titleBar.addEventListener("pointerdown", function (e) {
     startDrag(e, winState);
   });
 
@@ -570,46 +638,82 @@ function buildWindow(winState, opts) {
 /* ---------------------------- Dragging ------------------------------- */
 
 let dragState = null;
+let dragFrame = 0;
+let pendingDragX = 0;
+let pendingDragY = 0;
 
 function startDrag(e, winState) {
-  if (e.button !== 0) return; // left button only
+  if (e.button !== 0) return; // primary button only
   if (e.target.closest(".win-btn")) return; // don't drag from control buttons
   if (winState.el.classList.contains("is-maximized")) return;
 
   focusWindow(winState);
+
+  const el = winState.el;
+  /* Read geometry once per drag instead of on every pointer move. */
   dragState = {
     winState: winState,
-    offsetX: e.clientX - winState.el.offsetLeft,
-    offsetY: e.clientY - winState.el.offsetTop,
+    pointerId: e.pointerId,
+    startX: e.clientX,
+    startY: e.clientY,
+    originLeft: el.offsetLeft,
+    originTop: el.offsetTop,
+    maxX: Math.max(0, desktop.clientWidth - el.offsetWidth),
+    maxY: Math.max(0, desktop.clientHeight - el.offsetHeight),
   };
-
-  document.addEventListener("mousemove", onDrag);
-  document.addEventListener("mouseup", stopDrag);
-  e.preventDefault();
+  pendingDragX = dragState.originLeft;
+  pendingDragY = dragState.originTop;
+  el.classList.add("is-dragging");
 }
 
 function onDrag(e) {
+  if (!dragState || e.pointerId !== dragState.pointerId) return;
+
+  /* Clamp to the desktop, then coalesce writes into one frame. */
+  pendingDragX = Math.max(
+    0,
+    Math.min(dragState.originLeft + e.clientX - dragState.startX, dragState.maxX)
+  );
+  pendingDragY = Math.max(
+    0,
+    Math.min(dragState.originTop + e.clientY - dragState.startY, dragState.maxY)
+  );
+
+  if (!dragFrame) dragFrame = requestAnimationFrame(paintDrag);
+}
+
+function paintDrag() {
+  dragFrame = 0;
   if (!dragState) return;
-
-  const bounds = desktop.getBoundingClientRect();
-  const win = dragState.winState.el;
-
-  let x = e.clientX - bounds.left - dragState.offsetX;
-  let y = e.clientY - bounds.top - dragState.offsetY;
-
-  // Clamp so the window stays inside the desktop area
-  x = Math.max(0, Math.min(x, desktop.clientWidth - win.offsetWidth));
-  y = Math.max(0, Math.min(y, desktop.clientHeight - win.offsetHeight));
-
-  win.style.left = x + "px";
-  win.style.top = y + "px";
+  const el = dragState.winState.el;
+  el.style.transform =
+    "translate3d(" +
+    (pendingDragX - dragState.originLeft) +
+    "px," +
+    (pendingDragY - dragState.originTop) +
+    "px,0)";
 }
 
-function stopDrag() {
+function stopDrag(e) {
+  if (!dragState || (e && e.pointerId !== dragState.pointerId)) return;
+  if (dragFrame) {
+    cancelAnimationFrame(dragFrame);
+    dragFrame = 0;
+  }
+
+  /* Commit the transform to layout once, on release. */
+  const el = dragState.winState.el;
+  el.style.left = pendingDragX + "px";
+  el.style.top = pendingDragY + "px";
+  el.style.transform = "";
+  el.classList.remove("is-dragging");
   dragState = null;
-  document.removeEventListener("mousemove", onDrag);
-  document.removeEventListener("mouseup", stopDrag);
 }
+
+/* Registered once; no per-drag listener churn. */
+document.addEventListener("pointermove", onDrag, { passive: true });
+document.addEventListener("pointerup", stopDrag);
+document.addEventListener("pointercancel", stopDrag);
 
 /* --------------------- Window state management ----------------------- */
 
@@ -773,7 +877,14 @@ function buildStartMenu() {
   const header = createEl("div", { className: "cv-header" });
   const avatar = createEl("img", {
     className: "cv-avatar",
-    attrs: { src: "pfp.jpg", alt: profile.name },
+    attrs: {
+      src: "pfp.jpg",
+      alt: profile.name,
+      width: "46",
+      height: "46",
+      loading: "lazy",
+      decoding: "async",
+    },
   });
   header.appendChild(avatar);
   const headText = createEl("div", { className: "cv-head-text" });
@@ -909,6 +1020,7 @@ function buildNotepadContent() {
   });
   textarea.value =
     "Welcome to my portfolio desktop!\n\n" +
+    "- Java, Spring Boot and Angular are at the core of my work.\n" +
     "- Double-click the Technologies folder on the desktop to explore my stack.\n" +
     "- Click Start to open my CV: experience, education and languages.\n" +
     "- Drag windows by the title bar. Use – to minimize, □ to maximize, ✕ to close.\n" +
@@ -920,7 +1032,7 @@ function buildNotepadContent() {
 
 /* Tracks the last opened tech category so navigation back restores it. */
 function folderCount(folderId) {
-  if (folderId === "technologies") return PORTFOLIO.technologies.length;
+  if (folderId === "technologies") return ALL_TECHNOLOGIES.length;
   if (folderId === "experience") return PORTFOLIO.experience.length;
   if (folderId === "education") return PORTFOLIO.education.length;
   return PORTFOLIO.projects.length;
@@ -977,21 +1089,41 @@ function buildTechnologiesContent() {
   intro.appendChild(
     createEl("div", {
       className: "tech-intro-blurb",
-      text: "Les technologies que j'utilise au quotidien — front-end, back-end, bases de données et outillage.",
+      text: "Une stack centrée sur Java / Spring Boot et Angular — complétée par les bases de données et l'outillage du quotidien.",
     })
   );
   scroll.appendChild(intro);
 
-  const grid = createEl("div", { className: "tech-grid" });
-  PORTFOLIO.technologies.forEach(function (tech) {
-    grid.appendChild(techCard(tech));
+  PORTFOLIO.technologySections.forEach(function (section) {
+    const block = createEl("section", { className: "tech-section" });
+
+    const head = createEl("div", { className: "tech-section-head" });
+    const sectionIcon = createIcon(section.icon, 15);
+    sectionIcon.classList.add("tech-section-icon");
+    head.appendChild(sectionIcon);
+    head.appendChild(createEl("h3", { className: "tech-section-title", text: section.label }));
+    head.appendChild(
+      createEl("span", {
+        className: "tech-section-count",
+        text: section.items.length + (section.items.length === 1 ? " item" : " items"),
+      })
+    );
+    block.appendChild(head);
+
+    const grid = createEl("div", { className: "tech-grid" });
+    section.items.forEach(function (tech) {
+      grid.appendChild(techCard(tech));
+    });
+    block.appendChild(grid);
+    scroll.appendChild(block);
   });
-  scroll.appendChild(grid);
   content.appendChild(scroll);
 
   const status = createEl("div", { className: "status-bar" });
   status.appendChild(
-    createEl("span", { text: PORTFOLIO.technologies.length + " technologies" })
+    createEl("span", {
+      text: ALL_TECHNOLOGIES.length + " technologies · " + PORTFOLIO.technologySections.length + " sections",
+    })
   );
   status.appendChild(createEl("span", { text: "Full stack" }));
   content.appendChild(status);
@@ -1146,13 +1278,26 @@ function buildProjectsContent() {
   const grid = createEl("div", { className: "project-grid" });
 
   PORTFOLIO.projects.forEach(function (project) {
-    const hasLink = project.links && (project.links.repo || project.links.demo);
-    const card = createEl(hasLink ? "a" : "article", { className: "project-card" });
-    if (hasLink) {
-      card.setAttribute("href", project.links.repo || project.links.demo);
-      card.setAttribute("target", "_blank");
-      card.setAttribute("rel", "noopener noreferrer");
+    const links = project.links || {};
+    const primaryUrl = links.repo || links.demo || "";
+    const card = createEl("article", { className: "project-card" });
+
+    /* One overlay link makes the whole card clickable without nesting anchors. */
+    if (primaryUrl) {
       card.classList.add("is-clickable");
+      card.appendChild(
+        createEl("a", {
+          className: "project-overlay-link",
+          attrs: {
+            href: primaryUrl,
+            target: "_blank",
+            rel: "noopener noreferrer",
+            "aria-label": links.repo
+              ? "Open " + project.name + " on GitHub"
+              : "Open " + project.name,
+          },
+        })
+      );
     }
 
     const top = createEl("div", { className: "project-top" });
@@ -1171,29 +1316,26 @@ function buildProjectsContent() {
     body.appendChild(bulletList(project.highlights));
     body.appendChild(chipRow(project.stack));
 
-    const links = createEl("div", { className: "project-links" });
-    if (project.links && project.links.demo) {
+    const linksRow = createEl("div", { className: "project-links" });
+    if (links.demo) {
       const demoLink = createEl("a", {
         className: "project-link",
-        attrs: { href: project.links.demo, target: "_blank", rel: "noopener noreferrer" },
+        attrs: { href: links.demo, target: "_blank", rel: "noopener noreferrer" },
       });
       demoLink.appendChild(createIcon("play", 12));
       demoLink.appendChild(createEl("span", { text: "Live demo" }));
-      links.appendChild(demoLink);
+      linksRow.appendChild(demoLink);
     }
-    if (project.links && project.links.repo) {
+    if (links.repo) {
       const repoLink = createEl("a", {
         className: "project-link",
-        attrs: { href: project.links.repo, target: "_blank", rel: "noopener noreferrer" },
+        attrs: { href: links.repo, target: "_blank", rel: "noopener noreferrer" },
       });
-      repoLink.appendChild(createIcon("code", 12));
-      repoLink.appendChild(createEl("span", { text: "Source code" }));
-      repoLink.addEventListener("click", function (e) {
-        e.stopPropagation();
-      });
-      links.appendChild(repoLink);
+      repoLink.appendChild(createIcon("github", 12));
+      repoLink.appendChild(createEl("span", { text: "GitHub" }));
+      linksRow.appendChild(repoLink);
     }
-    if (links.children.length) body.appendChild(links);
+    if (linksRow.children.length) body.appendChild(linksRow);
 
     card.appendChild(body);
     grid.appendChild(card);
@@ -1205,8 +1347,17 @@ function buildProjectsContent() {
 
 /* ------------------------------ Clock -------------------------------- */
 
+let lastClockKey = "";
+
 function updateClock() {
   const now = new Date();
+  /* The clock only shows minutes, so skip redundant DOM writes. */
+  const key =
+    now.getFullYear() + "-" + now.getMonth() + "-" + now.getDate() +
+    "-" + now.getHours() + ":" + now.getMinutes();
+  if (key === lastClockKey) return;
+  lastClockKey = key;
+
   clockTime.textContent = now.toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
@@ -1217,22 +1368,49 @@ function updateClock() {
   });
 }
 
+/* Wake up just after each minute boundary instead of every second. */
+function scheduleClockTick() {
+  const now = new Date();
+  const msToNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds() + 25;
+  setTimeout(function () {
+    if (!document.hidden) updateClock();
+    scheduleClockTick();
+  }, msToNextMinute);
+}
+
 updateClock();
-setInterval(updateClock, 1000);
+scheduleClockTick();
+
+/* Background tabs skip ticks; catch up as soon as the tab is visible. */
+document.addEventListener("visibilitychange", function () {
+  if (!document.hidden) updateClock();
+});
 
 /* --------------------- Keep windows inside the desktop ----------------- */
 
-window.addEventListener("resize", function () {
-  windows.forEach(function (winState) {
-    const win = winState.el;
-    if (!win || !win.isConnected || win.classList.contains("is-maximized")) return;
+let resizeFrame = 0;
 
-    const x = Math.max(0, Math.min(win.offsetLeft, desktop.clientWidth - win.offsetWidth));
-    const y = Math.max(0, Math.min(win.offsetTop, desktop.clientHeight - win.offsetHeight));
-    win.style.left = x + "px";
-    win.style.top = y + "px";
-  });
-});
+window.addEventListener(
+  "resize",
+  function () {
+    if (resizeFrame) return; // at most one layout pass per frame
+    resizeFrame = requestAnimationFrame(function () {
+      resizeFrame = 0;
+      const maxX = desktop.clientWidth;
+      const maxY = desktop.clientHeight;
+      windows.forEach(function (winState) {
+        const win = winState.el;
+        if (!win || !win.isConnected || win.classList.contains("is-maximized")) return;
+
+        const x = Math.max(0, Math.min(win.offsetLeft, maxX - win.offsetWidth));
+        const y = Math.max(0, Math.min(win.offsetTop, maxY - win.offsetHeight));
+        win.style.left = x + "px";
+        win.style.top = y + "px";
+      });
+    });
+  },
+  { passive: true }
+);
 
 /* ------------------------------ Boot ---------------------------------- */
 
