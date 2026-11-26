@@ -30,159 +30,160 @@ function createEl(tag, options) {
 
 /* ------------------------------ Icons -------------------------------- */
 /*
- * Inline SVG icon set in the Lucide style (24×24, stroke = currentColor).
- * Keeps the whole UI emoji-free with no external dependency.
+ * Local PNG icons from the Tabler Icons library (MIT), tinted at build time.
+ * See icons/README.md and icons/build-icons.py for sources and regeneration.
  */
-const ICONS = {
-  "file-text":
-    '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/>',
-  folder:
-    '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
-  "folder-code":
-    '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/><path d="m10 13-2 2 2 2"/><path d="m14 17 2-2-2-2"/>',
-  "folder-kanban":
-    '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/><path d="M8 13v3"/><path d="M12 11v5"/><path d="M16 12v2"/>',
-  briefcase:
-    '<path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/>',
-  "graduation-cap":
-    '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>',
-  layout:
-    '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/>',
-  server:
-    '<rect width="20" height="8" x="2" y="2" rx="2"/><rect width="20" height="8" x="2" y="14" rx="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/>',
-  workflow:
-    '<rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/>',
-  wrench:
-    '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
-  atom:
-    '<circle cx="12" cy="12" r="1"/><path d="M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5Z"/><path d="M15.7 15.7c4.52-4.54 6.54-9.87 4.5-11.9-2.03-2.04-7.36-.02-11.9 4.5-4.52 4.54-6.54 9.87-4.5 11.9 2.03 2.04 7.36.02 11.9-4.5Z"/>',
-  triangle:
-    '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>',
-  braces:
-    '<path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/>',
-  "file-code":
-    '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="m10 13-2 2 2 2"/><path d="m14 17 2-2-2-2"/>',
-  coffee:
-    '<path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/>',
-  code: '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
-  flame:
-    '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
-  database:
-    '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>',
-  table:
-    '<path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/>',
-  target:
-    '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
-  pencil:
-    '<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/>',
-  repeat:
-    '<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>',
-  columns:
-    '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="M15 3v18"/>',
-  "clipboard-list":
-    '<rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>',
-  "git-branch":
-    '<line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',
-  layers:
-    '<path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>',
-  terminal: '<polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/>',
-  keyboard:
-    '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.01"/><path d="M10 8h.01"/><path d="M14 8h.01"/><path d="M18 8h.01"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/><path d="M7 16h10"/>',
-  building:
-    '<rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/>',
-  home:
-    '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
-  mail:
-    '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
-  play: '<polygon points="6 3 20 12 6 21 6 3"/>',
-  "square-code": '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
-  "database-mysql":
-    '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>',
-  github:
-    '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>',
-  linkedin:
-    '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/>',
-};
-
-/*
- * Icon colours — official brand colours where the icon represents a
- * technology, otherwise a distinct hue per context.
- */
-const ICON_COLORS = {
-  /* Apps & folders */
-  "file-text": "#4e8cff",
-  "folder-code": "#f0b429",
-  briefcase: "#4e8cff",
-  "graduation-cap": "#9d7cf4",
-  "folder-kanban": "#2ec4b6",
-  /* Tech categories */
-  layout: "#ff7aa2",
-  server: "#7f9cf5",
-  workflow: "#c792ea",
-  wrench: "#ff9f43",
-  /* Front-end */
-  atom: "#61dafb",
-  triangle: "#f0495c",
-  braces: "#f7df1e",
-  "file-code": "#3178c6",
-  /* Back-end */
-  coffee: "#e76f00",
-  code: "#777bb4",
-  flame: "#ff3c28",
-  database: "#7b9fff",
-  "database-mysql": "#00a8b5",
-  /* Conception & Méthodes */
-  table: "#4cc9f0",
-  target: "#ff7a45",
-  pencil: "#f24e1e",
-  repeat: "#2f80ed",
-  columns: "#56ccf2",
-  "clipboard-list": "#2684ff",
-  /* Outils */
-  "git-branch": "#f05033",
-  layers: "#2496ed",
-  terminal: "#fcc624",
-  "square-code": "#22a0ee",
-  keyboard: "#019833",
-  /* Projects */
-  building: "#45b7d1",
-  home: "#36b37e",
-  /* Misc */
-  mail: "#7aa2f7",
-  play: "#36b37e",
-  github: "#e6edf3",
-  linkedin: "#0a66c2",
-};
-
-/* Parse each SVG path only once, then clone the cached template per icon. */
-const ICON_TEMPLATES = new Map();
 
 /**
- * Build an <svg> icon from the ICONS set above.
- * @param {string} name key of the icon in ICONS
+ * Build an <img> icon from the PNG icon set.
+ * @param {string} name file name in icons/ (without the .png extension)
  * @param {number} [size] rendered width/height in px (default 16)
- * @returns {SVGElement}
+ * @returns {HTMLImageElement}
  */
 function createIcon(name, size) {
   const px = size || 16;
-  let template = ICON_TEMPLATES.get(name);
-  if (!template) {
-    template = document.createElement("template");
-    template.innerHTML =
-      '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" ' +
-      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-      (ICONS[name] || "") +
-      "</svg>";
-    ICON_TEMPLATES.set(name, template);
-  }
-
-  const svg = template.content.firstElementChild.cloneNode(true);
-  svg.setAttribute("width", String(px));
-  svg.setAttribute("height", String(px));
-  svg.setAttribute("stroke", ICON_COLORS[name] || "currentColor");
-  svg.classList.add("icon");
-  return svg;
+  return createEl("img", {
+    className: "icon",
+    attrs: {
+      src: "icons/" + name + ".png",
+      alt: "",
+      width: String(px),
+      height: String(px),
+      decoding: "async",
+      draggable: "false",
+    },
+  });
 }
+
+/* --------------------------- Language --------------------------------- */
+/*
+ * The CV data is French and the desktop chrome is English. tr() translates
+ * the active language's strings into the other one; everything not listed
+ * here (names, brand names, numbers) passes through unchanged.
+ */
+let currentLang = "fr";
+
+const TRANSLATIONS = {
+  en: {
+    "Développeur Full-Stack Java / Angular": "Java / Angular Full-Stack Developer",
+
+    "Stage de développement Full-Stack": "Full-Stack Development Internship",
+    "École Scolaire Nouhaila": "Nouhaila School",
+    "Mai — Juillet 2026": "May — July 2026",
+    "Stage full-stack au sein d'une école : de la conception à la mise en place d'une plateforme de communication interne.":
+      "Full-stack internship at a school: from design through to delivering an internal communication platform.",
+    "Conception et développement d'une plateforme de communication interne.":
+      "Designed and developed an internal communication platform.",
+    "Prise en charge du projet de bout en bout, du front-end au back-end.":
+      "Owned the project end to end, from front-end to back-end.",
+    "Stage de développement front-end": "Front-End Development Internship",
+    "Ministère de l'Éducation nationale": "Ministry of National Education",
+    "Février — Avril 2024": "February — April 2024",
+    "Stage front-end sur un projet de site web dédié à la gestion des stagiaires.":
+      "Front-end internship on a website project for managing interns.",
+    "Responsable du côté front-end d'un projet de site web de gestion des stagiaires.":
+      "Owned the front-end of a website project for managing interns.",
+
+    "Développement web Full-Stack": "Full-Stack Web Development",
+    "2025 — en cours": "2025 — ongoing",
+    "En cours": "Ongoing",
+    "Formation intensive en développement web Full-Stack.":
+      "Intensive full-stack web development programme.",
+    "Technicien Spécialisé en Développement Informatique":
+      "Specialised Technician in Software Development",
+    "Diplôme de technicien spécialisé en développement informatique.":
+      "Diploma as a specialised technician in software development.",
+    "Bases de données": "Databases",
+    "PHP (POO)": "PHP (OOP)",
+    "Baccalauréat — Sciences Physiques": "High School Diploma — Physical Sciences",
+    "Groupe Scolaire GHAZA Privé": "GHAZA Private School Group",
+    "Baccalauréat option Sciences Physiques.": "High school diploma, physical sciences track.",
+
+    "API REST de covoiturage multi-étapes en Java 17 / Spring Boot : publication de trajets avec arrêts ordonnés, réservation de segments et calcul dynamique des prix.":
+      "Multi-stop carpooling REST API in Java 17 / Spring Boot: publish trips with ordered stops, reserve segments and calculate prices dynamically.",
+    "Recherche de trajets entre deux arrêts en une seule requête JPQL.":
+      "Trip search between two stops in a single JPQL query.",
+    "Réservation de segments avec calcul du prix et contrôle des places.":
+      "Segment booking with price calculation and seat availability checks.",
+    "Erreurs normalisées RFC 9457 (ProblemDetail) et tests JUnit 5 / Mockito.":
+      "RFC 9457 standardised errors (ProblemDetail) and JUnit 5 / Mockito tests.",
+    "API Java 17 construite avec Spring MVC, Spring Data JPA et Hibernate, avec persistance PostgreSQL et tests JUnit.":
+      "Java 17 API built with Spring MVC, Spring Data JPA and Hibernate, with PostgreSQL persistence and JUnit tests.",
+    "Architecture en couches controller / service / repository.":
+      "Controller / service / repository layered architecture.",
+    "Persistance JPA / Hibernate et échanges JSON typés.":
+      "JPA / Hibernate persistence and typed JSON exchanges.",
+    "Application web de gestion scolaire développée avec Laravel. Elle facilite la gestion des notes, des devoirs et de l'assiduité des élèves.":
+      "School management web app built with Laravel. It simplifies handling grades, homework and student attendance.",
+    "Gestion des notes des élèves.": "Student grade management.",
+    "Suivi des devoirs.": "Homework tracking.",
+    "Suivi de l'assiduité.": "Attendance tracking.",
+    "Application web développée avec Laravel, inspirée du concept de Tricount, conçue pour simplifier la gestion des dépenses en colocation.":
+      "Web app built with Laravel, inspired by Tricount, designed to simplify shared household expense management.",
+    "Suivi et partage des dépenses entre colocataires.":
+      "Track and split expenses between housemates.",
+    "Inspirée du concept de Tricount.": "Inspired by the Tricount concept.",
+
+    "Arabe": "Arabic",
+    "Anglais": "English",
+    "Français": "French",
+    "Langue maternelle": "Native language",
+    "Conception & méthodes": "Design & methods",
+    "Outils": "Tools",
+    "Une stack centrée sur Java / Spring Boot et Angular — complétée par les bases de données et l'outillage du quotidien.":
+      "A stack centred on Java / Spring Boot and Angular — backed by databases and everyday tooling.",
+  },
+  fr: {
+    "Start": "Démarrer",
+    "Notepad": "Bloc-notes",
+    "Notepad — welcome.txt": "Bloc-notes — bienvenue.txt",
+    "welcome.txt": "bienvenue.txt",
+    "Plain text": "Texte brut",
+    "Document text": "Texte du document",
+    "Minimize": "Réduire",
+    "Maximize": "Agrandir",
+    "Close": "Fermer",
+    "Open": "Ouvrir",
+    "Experience": "Expérience",
+    "positions": "expériences",
+    "Career history": "Parcours professionnel",
+    "Education": "Formation",
+    "degrees": "diplômes",
+    "Academic background": "Parcours académique",
+    "Projects": "Projets",
+    "projects": "projets",
+    "Selected work": "Réalisations",
+    "Languages": "Langues",
+    "Folders": "Dossiers",
+    "Tech Stack": "Stack technique",
+    "item": "élément",
+    "items": "éléments",
+    "Full stack": "Full stack",
+    "Career so far": "Parcours professionnel",
+    "Key achievements": "Réalisations clés",
+    "Coursework": "Cours",
+    "Thesis": "Mémoire",
+    "Selected projects": "Projets sélectionnés",
+    "Live demo": "Démo en ligne",
+    "on GitHub": "sur GitHub",
+  },
+};
+
+function tr(text) {
+  const dict = TRANSLATIONS[currentLang];
+  return (dict && Object.prototype.hasOwnProperty.call(dict, text) && dict[text]) || text;
+}
+
+const NOTEPAD_TEXT = {
+  en:
+    "Welcome to my portfolio!\n\n" +
+    "Open the folders on the desktop to explore my work.\n" +
+    "Double-click a folder to open it.\n",
+  fr:
+    "Bienvenue sur mon portfolio !\n\n" +
+    "Ouvre les dossiers sur le bureau pour découvrir mon travail.\n" +
+    "Double-clique sur un dossier pour l'ouvrir.\n",
+};
 
 const app = document.getElementById("app");
 
@@ -407,6 +408,23 @@ taskbar.appendChild(taskButtons);
 taskbar.appendChild(tray);
 taskbar.appendChild(startMenu);
 
+/* ------------------------- Language toggle ---------------------------- */
+
+const langButton = createEl("button", {
+  className: "lang-toggle",
+  attrs: { type: "button", "aria-label": "Passer en anglais" },
+});
+const langFr = createEl("span", { className: "lang-code is-active", text: "FR" });
+const langEn = createEl("span", { className: "lang-code", text: "EN" });
+langButton.appendChild(langFr);
+langButton.appendChild(createEl("span", { className: "lang-divider", text: "/" }));
+langButton.appendChild(langEn);
+desktop.appendChild(langButton);
+
+langButton.addEventListener("click", function () {
+  setLanguage(currentLang === "fr" ? "en" : "fr");
+});
+
 /* ------------------------------ Apps --------------------------------- */
 /* Classic app windows (one instance per app); folders live in FOLDERS. */
 
@@ -418,7 +436,9 @@ const APPS = {
     title: "Notepad — welcome.txt",
     width: 560,
     height: 380,
-    status: ["welcome.txt", "UTF-8  •  Plain text"],
+    status: function () {
+      return [tr("welcome.txt"), "UTF-8  •  " + tr("Plain text")];
+    },
     buildContent: buildNotepadContent,
   },
 };
@@ -438,7 +458,9 @@ const FOLDERS = {
     label: "Experience",
     icon: "briefcase",
     title: "Experience",
-    status: [PORTFOLIO.experience.length + " positions", "Career history"],
+    status: function () {
+      return [PORTFOLIO.experience.length + " " + tr("positions"), tr("Career history")];
+    },
     buildContent: buildExperienceContent,
   },
   education: {
@@ -446,7 +468,9 @@ const FOLDERS = {
     label: "Education",
     icon: "graduation-cap",
     title: "Education",
-    status: [PORTFOLIO.education.length + " degrees", "Academic background"],
+    status: function () {
+      return [PORTFOLIO.education.length + " " + tr("degrees"), tr("Academic background")];
+    },
     buildContent: buildEducationContent,
   },
   projects: {
@@ -454,7 +478,9 @@ const FOLDERS = {
     label: "Projects",
     icon: "folder-kanban",
     title: "Projects",
-    status: [PORTFOLIO.projects.length + " projects", "Selected work"],
+    status: function () {
+      return [PORTFOLIO.projects.length + " " + tr("projects"), tr("Selected work")];
+    },
     buildContent: buildProjectsContent,
   },
 };
@@ -512,11 +538,12 @@ function openApp(appId) {
   const winState = newWindowRecord(appId);
   mountWindow(winState, {
     icon: def.icon,
-    title: def.title,
-    label: def.label,
+    title: tr(def.title),
+    label: tr(def.label),
     content: buildAppContent(def),
     width: def.width,
     height: def.height,
+    alignRight: appId === "notepad",
   });
 }
 
@@ -535,8 +562,8 @@ function openFolder(folderId) {
   const winState = newWindowRecord(folderId);
   mountWindow(winState, {
     icon: def.icon,
-    title: def.title,
-    label: def.label,
+    title: tr(def.title),
+    label: tr(def.label),
     content: buildAppContent(def),
     width: FOLDER_WIN_SIZE.width,
     height: FOLDER_WIN_SIZE.height,
@@ -547,9 +574,10 @@ function openFolder(folderId) {
 function buildAppContent(def) {
   const content = def.buildContent();
   if (def.status) {
+    const status = typeof def.status === "function" ? def.status() : def.status;
     const statusBar = createEl("div", { className: "status-bar" });
-    statusBar.appendChild(createEl("span", { text: def.status[0] }));
-    statusBar.appendChild(createEl("span", { text: def.status[1] }));
+    statusBar.appendChild(createEl("span", { text: status[0] }));
+    statusBar.appendChild(createEl("span", { text: status[1] }));
     content.appendChild(statusBar);
   }
   return content;
@@ -574,7 +602,9 @@ function placeWindow(win, size) {
   const offset = (cascadeIndex++ % 5) * 30;
   const maxLeft = Math.max(0, desktop.clientWidth - width);
   const maxTop = Math.max(0, desktop.clientHeight - height);
-  win.style.left = Math.min(110 + offset, maxLeft) + "px";
+  /* Notepad opens docked to the right; other windows cascade from the left. */
+  const left = size.alignRight ? Math.max(0, maxLeft - 24) : Math.min(110 + offset, maxLeft);
+  win.style.left = left + "px";
   win.style.top = Math.min(46 + offset, maxTop) + "px";
 }
 
@@ -593,17 +623,17 @@ function buildWindow(winState, opts) {
   const btnMin = createEl("button", {
     className: "win-btn win-minimize",
     text: "–",
-    attrs: { type: "button", title: "Minimize", "aria-label": "Minimize" },
+    attrs: { type: "button", title: tr("Minimize"), "aria-label": tr("Minimize") },
   });
   const btnMax = createEl("button", {
     className: "win-btn win-maximize",
     text: "□",
-    attrs: { type: "button", title: "Maximize", "aria-label": "Maximize" },
+    attrs: { type: "button", title: tr("Maximize"), "aria-label": tr("Maximize") },
   });
   const btnClose = createEl("button", {
     className: "win-btn win-close",
     text: "✕",
-    attrs: { type: "button", title: "Close", "aria-label": "Close" },
+    attrs: { type: "button", title: tr("Close"), "aria-label": tr("Close") },
   });
   controls.appendChild(btnMin);
   controls.appendChild(btnMax);
@@ -886,30 +916,32 @@ function buildStartMenu() {
   header.appendChild(avatar);
   const headText = createEl("div", { className: "cv-head-text" });
   headText.appendChild(createEl("div", { className: "cv-name", text: profile.name }));
-  headText.appendChild(createEl("div", { className: "cv-role", text: profile.title }));
-  headText.appendChild(createEl("div", { className: "cv-tagline", text: profile.tagline }));
+  headText.appendChild(createEl("div", { className: "cv-role", text: tr(profile.title) }));
+  headText.appendChild(createEl("div", { className: "cv-tagline", text: tr(profile.tagline) }));
   header.appendChild(headText);
   startMenu.appendChild(header);
 
   /* Experience */
-  startMenu.appendChild(menuHeader("Experience"));
+  startMenu.appendChild(menuHeader(tr("Experience")));
   PORTFOLIO.experience.forEach(function (job) {
-    startMenu.appendChild(cvEntry(job.role, job.company, job.period, job.achievements.slice(0, 2)));
+    startMenu.appendChild(
+      cvEntry(tr(job.role), tr(job.company), tr(job.period), job.achievements.slice(0, 2).map(tr))
+    );
   });
 
   /* Education */
-  startMenu.appendChild(menuHeader("Education"));
+  startMenu.appendChild(menuHeader(tr("Education")));
   PORTFOLIO.education.forEach(function (entry) {
-    startMenu.appendChild(cvEntry(entry.degree, entry.school, entry.period, null));
+    startMenu.appendChild(cvEntry(tr(entry.degree), tr(entry.school), tr(entry.period), null));
   });
 
   /* Languages */
-  startMenu.appendChild(menuHeader("Languages"));
+  startMenu.appendChild(menuHeader(tr("Languages")));
   const langList = createEl("div", { className: "lang-list" });
   PORTFOLIO.languages.forEach(function (lang) {
     const chip = createEl("div", { className: "lang-chip" });
-    chip.appendChild(createEl("span", { className: "lang-name", text: lang.name }));
-    chip.appendChild(createEl("span", { className: "lang-level", text: lang.level }));
+    chip.appendChild(createEl("span", { className: "lang-name", text: tr(lang.name) }));
+    chip.appendChild(createEl("span", { className: "lang-level", text: tr(lang.level) }));
     langList.appendChild(chip);
   });
   startMenu.appendChild(langList);
@@ -962,6 +994,70 @@ document.addEventListener("keydown", function (e) {
   if (e.key === "Escape") toggleStartMenu(false);
 });
 
+/* --------------------------- Language swap ----------------------------- */
+
+function syncLangButton() {
+  langFr.classList.toggle("is-active", currentLang === "fr");
+  langEn.classList.toggle("is-active", currentLang === "en");
+  langButton.setAttribute(
+    "aria-label",
+    currentLang === "fr" ? "Passer en anglais" : "Switch to French"
+  );
+}
+
+/** Rebuild all text in place, keeping window positions and Notepad edits. */
+function setLanguage(lang) {
+  if (lang === currentLang) return;
+  const previousLang = currentLang;
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  syncLangButton();
+
+  lastClockKey = "";
+  updateClock();
+
+  startMenu.textContent = "";
+  buildStartMenu();
+  iconsLayer.textContent = "";
+  buildDesktopIcons();
+
+  windows.forEach(function (winState) {
+    const def = APPS[winState.id] || FOLDERS[winState.id];
+    if (!def || !winState.el) return;
+
+    winState.titleTextEl.textContent = tr(def.title);
+    if (winState.taskLabelEl) winState.taskLabelEl.textContent = tr(def.label);
+    if (winState.taskButton) winState.taskButton.title = tr(def.label);
+
+    const oldContent = winState.el.querySelector(".window-content");
+    const oldTextarea = oldContent && oldContent.querySelector("textarea");
+    /* Keep user edits, but let the untouched welcome text follow the language. */
+    const typedText =
+      oldTextarea && oldTextarea.value !== NOTEPAD_TEXT[previousLang]
+        ? oldTextarea.value
+        : null;
+    const newContent = buildAppContent(def);
+    if (typedText !== null) {
+      const textarea = newContent.querySelector("textarea");
+      if (textarea) textarea.value = typedText;
+    }
+    if (oldContent) oldContent.replaceWith(newContent);
+
+    const controlLabels = {
+      "win-minimize": "Minimize",
+      "win-maximize": "Maximize",
+      "win-close": "Close",
+    };
+    Object.keys(controlLabels).forEach(function (className) {
+      const btn = winState.el.querySelector("." + className);
+      if (btn) {
+        btn.title = tr(controlLabels[className]);
+        btn.setAttribute("aria-label", tr(controlLabels[className]));
+      }
+    });
+  });
+}
+
 /* -------------------------- Desktop icons ---------------------------- */
 
 let lastIconTap = 0;
@@ -976,11 +1072,11 @@ function buildDesktopIcons() {
   DESKTOP_APPS.forEach(function (item) {
     const icon = createEl("button", {
       className: "desktop-icon",
-      attrs: { type: "button", title: "Open " + item.label },
+      attrs: { type: "button", title: tr("Open") + " " + tr(item.label) },
     });
-    icon.appendChild(createIcon(item.icon, 36));
+    icon.appendChild(createIcon(item.icon, 48));
     icon.lastChild.classList.add("icon-glyph");
-    icon.appendChild(createEl("span", { className: "icon-label", text: item.label }));
+    icon.appendChild(createEl("span", { className: "icon-label", text: tr(item.label) }));
 
     icon.addEventListener("click", function (e) {
       e.stopPropagation();
@@ -1016,16 +1112,9 @@ desktop.addEventListener("click", function (e) {
 function buildNotepadContent() {
   const content = createEl("div", { className: "window-content" });
   const textarea = createEl("textarea", {
-    attrs: { spellcheck: "false", "aria-label": "Document text" },
+    attrs: { spellcheck: "false", "aria-label": tr("Document text") },
   });
-  textarea.value =
-    "Welcome to my portfolio desktop!\n\n" +
-    "- Java, Spring Boot and Angular are at the core of my work.\n" +
-    "- Double-click the Technologies folder on the desktop to explore my stack.\n" +
-    "- Click Start to open my CV: experience, education and languages.\n" +
-    "- Drag windows by the title bar. Use – to minimize, □ to maximize, ✕ to close.\n" +
-    "- Re-open apps any time from the Start menu or the taskbar.\n" +
-    "- Double-click a title bar to toggle maximize.\n";
+  textarea.value = NOTEPAD_TEXT[currentLang];
   content.appendChild(textarea);
   return content;
 }
@@ -1045,19 +1134,19 @@ function folderCount(folderId) {
 function buildFolderSidebar(activeFolderId) {
   const nav = createEl("nav", {
     className: "folder-sidebar",
-    attrs: { "aria-label": "Folders" },
+    attrs: { "aria-label": tr("Folders") },
   });
-  nav.appendChild(createEl("div", { className: "side-heading", text: "Folders" }));
+  nav.appendChild(createEl("div", { className: "side-heading", text: tr("Folders") }));
 
   FOLDER_ORDER.forEach(function (folderId) {
     const def = FOLDERS[folderId];
     const btn = createEl("button", {
       className: "side-item" + (folderId === activeFolderId ? " is-active" : ""),
-      attrs: { type: "button", "data-folder-id": folderId, title: def.label },
+      attrs: { type: "button", "data-folder-id": folderId, title: tr(def.label) },
     });
     btn.appendChild(createIcon(def.icon, 15));
     btn.lastChild.classList.add("side-icon");
-    btn.appendChild(createEl("span", { className: "side-label", text: def.label }));
+    btn.appendChild(createEl("span", { className: "side-label", text: tr(def.label) }));
     btn.appendChild(createEl("span", { className: "side-count", text: String(folderCount(folderId)) }));
     btn.addEventListener("click", function () {
       openFolder(folderId);
@@ -1069,12 +1158,13 @@ function buildFolderSidebar(activeFolderId) {
 }
 
 function techCard(tech) {
-  const card = createEl("div", { className: "tech-card", attrs: { title: tech.name } });
+  const name = tr(tech.name);
+  const card = createEl("div", { className: "tech-card", attrs: { title: name } });
   card.appendChild(createIcon(tech.icon, 22));
   card.lastChild.classList.add("tech-icon");
 
   const info = createEl("div", { className: "tech-info" });
-  info.appendChild(createEl("span", { className: "tech-name", text: tech.name }));
+  info.appendChild(createEl("span", { className: "tech-name", text: name }));
 
   card.appendChild(info);
   return card;
@@ -1085,11 +1175,11 @@ function buildTechnologiesContent() {
   const scroll = createEl("div", { className: "tech-scroll" });
 
   const intro = createEl("div", { className: "tech-intro" });
-  intro.appendChild(createEl("div", { className: "tech-intro-title", text: "Tech Stack" }));
+  intro.appendChild(createEl("div", { className: "tech-intro-title", text: tr("Tech Stack") }));
   intro.appendChild(
     createEl("div", {
       className: "tech-intro-blurb",
-      text: "Une stack centrée sur Java / Spring Boot et Angular — complétée par les bases de données et l'outillage du quotidien.",
+      text: tr("Une stack centrée sur Java / Spring Boot et Angular — complétée par les bases de données et l'outillage du quotidien."),
     })
   );
   scroll.appendChild(intro);
@@ -1101,11 +1191,14 @@ function buildTechnologiesContent() {
     const sectionIcon = createIcon(section.icon, 15);
     sectionIcon.classList.add("tech-section-icon");
     head.appendChild(sectionIcon);
-    head.appendChild(createEl("h3", { className: "tech-section-title", text: section.label }));
+    head.appendChild(createEl("h3", { className: "tech-section-title", text: tr(section.label) }));
     head.appendChild(
       createEl("span", {
         className: "tech-section-count",
-        text: section.items.length + (section.items.length === 1 ? " item" : " items"),
+        text:
+          section.items.length +
+          " " +
+          tr(section.items.length === 1 ? "item" : "items"),
       })
     );
     block.appendChild(head);
@@ -1125,7 +1218,7 @@ function buildTechnologiesContent() {
       text: ALL_TECHNOLOGIES.length + " technologies · " + PORTFOLIO.technologySections.length + " sections",
     })
   );
-  status.appendChild(createEl("span", { text: "Full stack" }));
+  status.appendChild(createEl("span", { text: tr("Full stack") }));
   content.appendChild(status);
   return content;
 }
@@ -1187,11 +1280,12 @@ function buildExperienceContent() {
 
   scroll.appendChild(
     detailHero(
-      "Career so far",
-      PORTFOLIO.experience.length +
-      " positions across " +
-      companies +
-      " companies — the expanded version of the summary shown in the Start menu."
+      tr("Career so far"),
+      currentLang === "fr"
+        ? PORTFOLIO.experience.length + " expériences chez " + companies +
+          " entreprises — la version détaillée du résumé affiché dans le menu Démarrer."
+        : PORTFOLIO.experience.length + " positions across " + companies +
+          " companies — the expanded version of the summary shown in the Start menu."
     )
   );
 
@@ -1199,20 +1293,20 @@ function buildExperienceContent() {
     const article = createEl("article", { className: "detail-entry" });
 
     const top = createEl("div", { className: "entry-top" });
-    top.appendChild(createEl("div", { className: "entry-title", text: job.role }));
-    top.appendChild(createEl("span", { className: "entry-period", text: job.period }));
+    top.appendChild(createEl("div", { className: "entry-title", text: tr(job.role) }));
+    top.appendChild(createEl("span", { className: "entry-period", text: tr(job.period) }));
     article.appendChild(top);
 
     article.appendChild(
-      createEl("div", { className: "entry-sub", text: job.company + " · " + job.location })
+      createEl("div", { className: "entry-sub", text: tr(job.company) + " · " + job.location })
     );
-    article.appendChild(createEl("p", { className: "entry-text", text: job.summary }));
+    article.appendChild(createEl("p", { className: "entry-text", text: tr(job.summary) }));
 
-    article.appendChild(createEl("div", { className: "entry-sub-title", text: "Key achievements" }));
-    article.appendChild(bulletList(job.achievements));
+    article.appendChild(createEl("div", { className: "entry-sub-title", text: tr("Key achievements") }));
+    article.appendChild(bulletList(job.achievements.map(tr)));
 
-    article.appendChild(createEl("div", { className: "entry-sub-title", text: "Stack" }));
-    article.appendChild(chipRow(job.stack));
+    article.appendChild(createEl("div", { className: "entry-sub-title", text: tr("Stack") }));
+    article.appendChild(chipRow(job.stack.map(tr)));
 
     scroll.appendChild(article);
   });
@@ -1226,9 +1320,10 @@ function buildEducationContent() {
 
   scroll.appendChild(
     detailHero(
-      "Academic background",
-      PORTFOLIO.education.length +
-      " degrees with coursework, honours and thesis details — beyond the short entry in the Start menu."
+      tr("Academic background"),
+      currentLang === "fr"
+        ? PORTFOLIO.education.length + " diplômes, avec cours, mentions et mémoire — au-delà de l'entrée courte du menu Démarrer."
+        : PORTFOLIO.education.length + " degrees with coursework, honours and thesis details — beyond the short entry in the Start menu."
     )
   );
 
@@ -1236,25 +1331,25 @@ function buildEducationContent() {
     const article = createEl("article", { className: "detail-entry" });
 
     const top = createEl("div", { className: "entry-top" });
-    top.appendChild(createEl("div", { className: "entry-title", text: entry.degree }));
-    top.appendChild(createEl("span", { className: "entry-period", text: entry.period }));
+    top.appendChild(createEl("div", { className: "entry-title", text: tr(entry.degree) }));
+    top.appendChild(createEl("span", { className: "entry-period", text: tr(entry.period) }));
     article.appendChild(top);
 
     const subRow = createEl("div", { className: "entry-sub" });
-    subRow.appendChild(createEl("span", { text: entry.school }));
-    if (entry.honors) subRow.appendChild(createEl("span", { className: "badge", text: entry.honors }));
+    subRow.appendChild(createEl("span", { text: tr(entry.school) }));
+    if (entry.honors) subRow.appendChild(createEl("span", { className: "badge", text: tr(entry.honors) }));
     article.appendChild(subRow);
 
-    article.appendChild(createEl("p", { className: "entry-text", text: entry.summary }));
+    article.appendChild(createEl("p", { className: "entry-text", text: tr(entry.summary) }));
 
     if (entry.courses && entry.courses.length) {
-      article.appendChild(createEl("div", { className: "entry-sub-title", text: "Coursework" }));
-      article.appendChild(chipRow(entry.courses));
+      article.appendChild(createEl("div", { className: "entry-sub-title", text: tr("Coursework") }));
+      article.appendChild(chipRow(entry.courses.map(tr)));
     }
 
     if (entry.thesis) {
-      article.appendChild(createEl("div", { className: "entry-sub-title", text: "Thesis" }));
-      article.appendChild(createEl("p", { className: "entry-text", text: entry.thesis }));
+      article.appendChild(createEl("div", { className: "entry-sub-title", text: tr("Thesis") }));
+      article.appendChild(createEl("p", { className: "entry-text", text: tr(entry.thesis) }));
     }
 
     scroll.appendChild(article);
@@ -1269,9 +1364,10 @@ function buildProjectsContent() {
 
   scroll.appendChild(
     detailHero(
-      "Selected projects",
-      PORTFOLIO.projects.length +
-      " projects with descriptions, tech stacks and links — more detail than anywhere else on the desktop."
+      tr("Selected projects"),
+      currentLang === "fr"
+        ? PORTFOLIO.projects.length + " projets avec descriptions, stacks techniques et liens — plus de détails que partout ailleurs sur le bureau."
+        : PORTFOLIO.projects.length + " projects with descriptions, tech stacks and links — more detail than anywhere else on the desktop."
     )
   );
 
@@ -1293,8 +1389,8 @@ function buildProjectsContent() {
             target: "_blank",
             rel: "noopener noreferrer",
             "aria-label": links.repo
-              ? "Open " + project.name + " on GitHub"
-              : "Open " + project.name,
+              ? tr("Open") + " " + project.name + " " + tr("on GitHub")
+              : tr("Open") + " " + project.name,
           },
         })
       );
@@ -1307,14 +1403,14 @@ function buildProjectsContent() {
     name.appendChild(createEl("span", { text: project.name }));
     top.appendChild(name);
     if (project.period) {
-      top.appendChild(createEl("span", { className: "project-period", text: project.period }));
+      top.appendChild(createEl("span", { className: "project-period", text: tr(project.period) }));
     }
 
     const body = createEl("div", { className: "card-link" });
     body.appendChild(top);
-    body.appendChild(createEl("p", { className: "project-desc", text: project.description }));
-    body.appendChild(bulletList(project.highlights));
-    body.appendChild(chipRow(project.stack));
+    body.appendChild(createEl("p", { className: "project-desc", text: tr(project.description) }));
+    body.appendChild(bulletList(project.highlights.map(tr)));
+    body.appendChild(chipRow(project.stack.map(tr)));
 
     const linksRow = createEl("div", { className: "project-links" });
     if (links.demo) {
@@ -1323,7 +1419,7 @@ function buildProjectsContent() {
         attrs: { href: links.demo, target: "_blank", rel: "noopener noreferrer" },
       });
       demoLink.appendChild(createIcon("play", 12));
-      demoLink.appendChild(createEl("span", { text: "Live demo" }));
+      demoLink.appendChild(createEl("span", { text: tr("Live demo") }));
       linksRow.appendChild(demoLink);
     }
     if (links.repo) {
@@ -1358,11 +1454,12 @@ function updateClock() {
   if (key === lastClockKey) return;
   lastClockKey = key;
 
-  clockTime.textContent = now.toLocaleTimeString([], {
+  const locale = currentLang === "fr" ? "fr-FR" : "en-US";
+  clockTime.textContent = now.toLocaleTimeString(locale, {
     hour: "2-digit",
     minute: "2-digit",
   });
-  clockDate.textContent = now.toLocaleDateString([], {
+  clockDate.textContent = now.toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
   });
@@ -1417,6 +1514,7 @@ window.addEventListener(
 buildDesktopIcons();
 desktop.appendChild(iconsLayer);
 buildStartMenu();
+syncLangButton();
 
 app.appendChild(desktop);
 app.appendChild(taskbar);

@@ -1,7 +1,16 @@
 /* ---------------------------------------------------------------
    WebOS — desktop environment styles (vanilla CSS)
-   Clean macOS-inspired glass theme.
+   Windows-like cyberpunk glass theme.
    --------------------------------------------------------------- */
+
+/* Inter variable — self-hosted, SIL OFL 1.1 (see fonts/INTER-LICENSE.txt) */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("fonts/inter-latin-variable.woff2") format("woff2");
+}
 
 :root {
   --accent: #0a84ff;
@@ -32,8 +41,8 @@ body {
 }
 
 body {
-  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont,
-    Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system,
+    BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: 13.5px;
   color: var(--text-1);
   background: #0b0d17;
@@ -460,20 +469,12 @@ button {
 
 /* --------------------- Desktop icons ----------------------------- */
 
-/* Inline SVG icons (createIcon) — inherit currentColor from context */
+/* PNG icons (createIcon) — artwork is pre-tinted at build time */
 .icon {
   display: block;
   flex-shrink: 0;
-}
-
-.title-icon,
-.panel-icon,
-.project-icon {
-  color: var(--accent);
-}
-
-.cv-footer .icon {
-  color: var(--accent);
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .desktop-icons {
@@ -491,7 +492,7 @@ button {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  width: 96px;
+  width: 108px;
   padding: 12px 6px 10px;
   border-radius: 10px;
   border: 1px solid transparent;
@@ -519,6 +520,48 @@ button {
   color: #ffffff;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
   overflow-wrap: break-word;
+}
+
+/* Language switcher, pinned to the top-right of the desktop */
+.lang-toggle {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 34px;
+  padding: 0 13px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 229, 255, 0.5);
+  background: rgba(8, 12, 22, 0.82);
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  box-shadow: 0 0 14px rgba(0, 229, 255, 0.16);
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.lang-toggle:hover {
+  background: rgba(0, 229, 255, 0.18);
+  border-color: var(--neon-cyan);
+}
+
+.lang-toggle:active {
+  transform: scale(0.96);
+}
+
+.lang-code.is-active {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+}
+
+.lang-divider {
+  color: var(--text-3);
+  font-weight: 400;
 }
 
 /* --------------------- Scrollbars + Start menu CV ---------------- */
@@ -1215,15 +1258,20 @@ button {
     left: 8px;
   }
 
+  .lang-toggle {
+    top: 10px;
+    right: 8px;
+  }
+
   .desktop-icon {
-    width: 78px;
+    width: 88px;
     gap: 5px;
     padding: 8px 4px 6px;
   }
 
   .icon-glyph {
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
   }
 
   .tech-grid {
