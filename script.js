@@ -100,6 +100,8 @@ const ICONS = {
     '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>',
   github:
     '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>',
+  linkedin:
+    '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/>',
 };
 
 /*
@@ -149,6 +151,7 @@ const ICON_COLORS = {
   mail: "#7aa2f7",
   play: "#36b37e",
   github: "#e6edf3",
+  linkedin: "#0a66c2",
 };
 
 /* Parse each SVG path only once, then clone the cached template per icon. */
@@ -466,9 +469,13 @@ function launch(id) {
 }
 
 /* Desktop icon configuration (single click selects, double click / Enter opens). */
-const DESKTOP_APPS = FOLDER_ORDER.map(function (id) {
-  return { appId: id, icon: FOLDERS[id].icon, label: FOLDERS[id].label };
-});
+const DESKTOP_APPS = [
+  { appId: "notepad", icon: APPS.notepad.icon, label: APPS.notepad.label },
+].concat(
+  FOLDER_ORDER.map(function (id) {
+    return { appId: id, icon: FOLDERS[id].icon, label: FOLDERS[id].label };
+  })
+);
 
 /* --------------------------- Windows --------------------------------- */
 
@@ -706,7 +713,11 @@ function stopDrag(e) {
   el.style.left = pendingDragX + "px";
   el.style.top = pendingDragY + "px";
   el.style.transform = "";
-  el.classList.remove("is-dragging");
+
+  /* Drop the no-transition flag only after the committed position is painted. */
+  requestAnimationFrame(function () {
+    if (!dragState) el.classList.remove("is-dragging");
+  });
   dragState = null;
 }
 
@@ -856,20 +867,6 @@ function cvEntry(title, subtitle, period, highlights) {
   return entry;
 }
 
-function appMenuItem(def) {
-  const item = createEl("button", {
-    className: "menu-item",
-    attrs: { type: "button" },
-  });
-  item.appendChild(createIcon(def.icon, 17));
-  item.appendChild(createEl("span", { text: def.label }));
-  item.addEventListener("click", function () {
-    launch(def.id);
-    toggleStartMenu(false);
-  });
-  return item;
-}
-
 function buildStartMenu() {
   const profile = PORTFOLIO.profile;
 
@@ -880,8 +877,8 @@ function buildStartMenu() {
     attrs: {
       src: "pfp.jpg",
       alt: profile.name,
-      width: "46",
-      height: "46",
+      width: "52",
+      height: "52",
       loading: "lazy",
       decoding: "async",
     },
@@ -893,15 +890,6 @@ function buildStartMenu() {
   headText.appendChild(createEl("div", { className: "cv-tagline", text: profile.tagline }));
   header.appendChild(headText);
   startMenu.appendChild(header);
-
-  /* Applications */
-  startMenu.appendChild(menuHeader("Applications"));
-  Object.keys(APPS).forEach(function (id) {
-    startMenu.appendChild(appMenuItem(APPS[id]));
-  });
-  FOLDER_ORDER.forEach(function (id) {
-    startMenu.appendChild(appMenuItem(FOLDERS[id]));
-  });
 
   /* Experience */
   startMenu.appendChild(menuHeader("Experience"));
@@ -926,16 +914,28 @@ function buildStartMenu() {
   });
   startMenu.appendChild(langList);
 
-  /* Contact footer */
-  startMenu.appendChild(
-    createEl("a", {
-      className: "cv-footer",
-      attrs: { href: "mailto:" + profile.email },
-    })
-  );
-  const footer = startMenu.lastChild;
-  footer.appendChild(createIcon("mail", 14));
-  footer.appendChild(createEl("span", { text: profile.email }));
+  /* Contact links */
+  const contacts = createEl("div", { className: "cv-links" });
+  [
+    { href: "mailto:" + profile.email, icon: "mail", text: profile.email },
+    {
+      href: "https://www.linkedin.com/in/ziyad-cheto-5b7638328/",
+      icon: "linkedin",
+      text: "LinkedIn",
+    },
+    { href: "https://github.com/ZiyadCh", icon: "github", text: "GitHub" },
+  ].forEach(function (contact) {
+    const attrs = { href: contact.href };
+    if (contact.href.indexOf("http") === 0) {
+      attrs.target = "_blank";
+      attrs.rel = "noopener noreferrer";
+    }
+    const link = createEl("a", { className: "cv-footer", attrs: attrs });
+    link.appendChild(createIcon(contact.icon, 14));
+    link.appendChild(createEl("span", { text: contact.text }));
+    contacts.appendChild(link);
+  });
+  startMenu.appendChild(contacts);
 }
 
 function toggleStartMenu(force) {
@@ -978,7 +978,7 @@ function buildDesktopIcons() {
       className: "desktop-icon",
       attrs: { type: "button", title: "Open " + item.label },
     });
-    icon.appendChild(createIcon(item.icon, 34));
+    icon.appendChild(createIcon(item.icon, 36));
     icon.lastChild.classList.add("icon-glyph");
     icon.appendChild(createEl("span", { className: "icon-label", text: item.label }));
 
